@@ -90,3 +90,6 @@ You can test the Lambda using the AWS Console by simulating a test event.
 Use an S3 ObjectCreated:Put event as the sample.
 
 Once everything is set up, you’ll have a fully automated image classification pipeline running in the cloud — no manual steps, no guessing. Just upload an image and let AWS handle the rest. This project is a great starting point for anyone looking to learn cloud automation, serverless architecture, or how to integrate security workflows into real-world scenarios.
+
+# Check out my Medium post: 👇
+https://medium.com/@sjmitchell1920/from-upload-to-insight-deploying-a-scalable-image-classification-workflow-using-rekognition-d6f1ebda0dc0
