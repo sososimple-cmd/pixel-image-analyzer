@@ -1,0 +1,35 @@
+name: Upload Image to S3
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_file:
+        description: "Image file to upload (must be in images/ folder)"
+        required: true
+      environment:
+        description: "beta or prod"
+        required: true
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install boto3
+        run: pip install boto3
+
+      - name: Upload to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        run: |
+          python3 images/scripts/upload_to_s3.py ${{ github.event.inputs.image_file }} ${{ github.event.inputs.environment }}
