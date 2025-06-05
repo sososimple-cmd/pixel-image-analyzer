@@ -21,4 +21,3 @@
 ## ✅ Verifying
 Go to your AWS DynamoDB console, check either `beta_results` or `prod_results` table for new entries.
 ## This is a Level up in Tech project!
-## PR Test Trigger again
