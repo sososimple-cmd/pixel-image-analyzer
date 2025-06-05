@@ -21,28 +21,32 @@ def analyze_image(file_name, environment):
     except Exception as e:
         print("❌ Upload failed:", e)
 
-    # Analyze using Rekognition
-    response = rekognition.detect_labels(
-        Image={'S3Object': {'Bucket': bucket, 'Name': s3_key}},
-        MaxLabels=10,
-        MinConfidence=75
-    )
+     # Analyze using Rekognition
+    try:
+        response = rekognition.detect_labels(
+            Image={'S3Object': {'Bucket': bucket, 'Name': s3_key}},
+            MaxLabels=10,
+            MinConfidence=75
+        )
+        labels = [{'Name': label['Name'], 'Confidence': label['Confidence']} for label in response['Labels']]
+        print("🔍 Labels detected:", labels)
+    except Exception as e:
+        print("❌ Rekognition label detection failed:", e)
+        return
 
-    labels = [{'Name': label['Name'], 'Confidence': label['Confidence']} for label in response['Labels']]
     timestamp = datetime.datetime.utcnow().isoformat()
 
     # Save to DynamoDB
-    table_name = os.getenv("DYNAMODB_TABLE_BETA") if environment == 'beta' else os.getenv("DYNAMODB_TABLE_PROD")
-    table = dynamodb.Table(table_name)
-    table.put_item(Item={
-        'image_name': file_name,
-        'labels': json.dumps(labels),
-        'timestamp': timestamp,
-        'branch': environment
-    })
-
-if __name__ == "__main__":
-    import sys
-    file_name = sys.argv[1]
-    environment = sys.argv[2]
-    analyze_image(file_name, environment)
+    try:
+        table_name = os.getenv("DYNAMODB_TABLE_BETA") if environment == 'beta' else os.getenv("DYNAMODB_TABLE_PROD")
+        table = dynamodb.Table(table_name)
+        item = {
+            'image_name': file_name,
+            'branch': environment,
+            'labels': json.dumps(labels, indent=2),
+            'timestamp': timestamp
+        }
+        table.put_item(Item=item)
+        print(f"✅ Metadata logged to DynamoDB table '{table_name}':\n", json.dumps(item, indent=2))
+    except Exception as e:
+        print("❌ Failed to write to DynamoDB:", e)
