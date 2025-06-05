@@ -12,8 +12,14 @@ def analyze_image(file_name, environment):
     # Upload to S3
     bucket = os.getenv("S3_BUCKET")
     s3_key = f"rekognition-input/{file_name}"
+    print(f"Uploading {file_name} to S3 bucket '{bucket}' at key '{s3_key}'...")
+
+try:
     with open(f"images/{file_name}", 'rb') as image:
         s3.upload_fileobj(image, bucket, s3_key)
+    print("✅ Upload successful!")
+except Exception as e:
+    print("❌ Upload failed:", e)
 
     # Analyze using Rekognition
     response = rekognition.detect_labels(
