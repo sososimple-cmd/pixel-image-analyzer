@@ -23,4 +23,4 @@ jobs:
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
           DYNAMODB_TABLE_BETA: ${{ secrets.DYNAMODB_TABLE_BETA }}
         run: |
-          python images/script/analyze_image.py sample.jpg beta
+          python images/scripts/analyze_image.py sample.jpg beta
